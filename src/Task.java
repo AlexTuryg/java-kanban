@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Task {
     protected int taskId;
     protected String taskStatus;
@@ -59,6 +61,19 @@ public class Task {
                 ", taskName='" + taskName + '\'' +
                 ", taskText='" + taskText + '\'' +
                 '}';
+    }
+    //Переопределил методы
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return taskId == task.taskId && Objects.equals(taskStatus, task.taskStatus) && Objects.equals(taskName, task.taskName) && Objects.equals(taskText, task.taskText);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taskId, taskStatus, taskName, taskText);
     }
 }
 

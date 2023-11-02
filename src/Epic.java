@@ -21,9 +21,9 @@ public class Epic extends Task {
     public ArrayList<Integer> getSubtasksID() {
         return subtasksId;
     }
-
-    public void setSubtasksId(ArrayList<Integer> subtasksId) {
-        this.subtasksId = subtasksId;
+    //Добавил метод для очистки всех Id сабтасков
+    public void clearAllSubtask(){
+        subtasksId.clear();
     }
 
 
