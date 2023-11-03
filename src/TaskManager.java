@@ -76,7 +76,8 @@ public class TaskManager {
             subtasks.put(id, newSubtask);
             Epic epic = epics.get(newSubtask.getEpicId());
             epic.addSubtaskId(id);
-            checkEpicStatus(epics.get(newSubtask.getEpicId()));
+            //Исправил ошибку checkEpicStatus(epics.get(newSubtask.getEpicId()));
+            checkEpicStatus(epic);
             return id;
         }else {
             return 0;
@@ -105,7 +106,8 @@ public class TaskManager {
             Epic epic = epics.get(epicId);
             epic.setTaskName(name);
             epic.setTaskText(text);
-            epics.put(epicId, checkEpicStatus(epic));
+            checkEpicStatus(epic);
+            //убрал epics.put(epicId, checkEpicStatus(epic));
         }
     }
 
@@ -135,14 +137,22 @@ public class TaskManager {
             Epic epic = epics.get(subtask.getEpicId());
             epic.deleteSubtask(subtaskId);
             subtasks.remove(subtaskId);
-            epics.put(subtask.getEpicId(), checkEpicStatus(epic));
+            checkEpicStatus(epic);
+            // Исправил epics.put(subtask.getEpicId(), checkEpicStatus(epic));
         }
     }
 
     //Метод возвращающий все подзадачи эпика
 
     public ArrayList<Subtask> getEpicsSubtasks(int epicId) {
-        return new ArrayList<Subtask>(subtasks.values());
+        //Исправил ошибку return new ArrayList<Subtask>(subtasks.values());
+        //к сожалению на другую реализацию меня не хватило((((
+        ArrayList<Integer> subtasksId = epics.get(epicId).getSubtasksID();
+        ArrayList<Subtask> returnedSubtasks = new ArrayList<>();
+        for (int sId: subtasksId){
+            returnedSubtasks.add(subtasks.get(sId));
+        }
+        return returnedSubtasks;
     }
 
     //Метод обновляющий статус Эпика

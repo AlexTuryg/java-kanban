@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList<Integer> subtasksId = new ArrayList<>();
@@ -14,9 +15,6 @@ public class Epic extends Task {
     public void addSubtaskId(int subtaskId) {
         subtasksId.add(subtaskId);
     }
-    public void addTaskStatus(String taskStatus){
-
-    }
 
     public ArrayList<Integer> getSubtasksID() {
         return subtasksId;
@@ -26,9 +24,9 @@ public class Epic extends Task {
         subtasksId.clear();
     }
 
-
+    //Переписал метод
     public void deleteSubtask(int subtaskId){
-       subtasksId.remove(subtasksId.indexOf(subtaskId)) ;
+       subtasksId.remove(Integer.valueOf(subtaskId)) ;
     }
     @Override
     public String toString() {
@@ -39,7 +37,21 @@ public class Epic extends Task {
                 ", taskStatus='" + taskStatus + '\'' +
                 ", taskName='" + taskName + '\'' +
                 ", taskText='" + taskText + '\'' +
-                '}';
+                '}'+ "\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtasksId, epic.subtasksId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtasksId);
     }
 }
 

@@ -60,7 +60,7 @@ public class Task {
                 ", taskStatus='" + taskStatus + '\'' +
                 ", taskName='" + taskName + '\'' +
                 ", taskText='" + taskText + '\'' +
-                '}';
+                '}'+ "\n";
     }
     //Переопределил методы
     @Override

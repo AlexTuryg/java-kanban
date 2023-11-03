@@ -24,6 +24,17 @@ public class  Main {
         int subtaskId = manager.addSubtask(subtusk);
         int subtask2Id = manager.addSubtask(subtusk1);
 
+        Epic epic2 = new Epic("Second epic", "Second epic text" );
+        int epic2Id = manager.addEpic(epic2);
+        Subtask subtuskSecond
+                = new Subtask("NEW","Second epics", "Second epicst text", epic2Id);
+        Subtask subtuskSecond1
+                = new Subtask("DONE", "Second epics 2", "Second epicst text 2", epic2Id);
+        int SecondId = manager.addSubtask(subtuskSecond);
+        int Second1Id = manager.addSubtask(subtuskSecond1);
+
+
+
         ArrayList<Subtask> subtuskHashMap = manager.getAllSubtasks();
         for (Subtask subtaskTst : subtuskHashMap)
             System.out.println(subtaskTst.toString());
@@ -32,18 +43,9 @@ public class  Main {
 
         System.out.println(epicHashMap.toString());
 
-        Subtask subtusk2 = new Subtask("DONE","First epics","First epics txt",epicId);
-        manager.changeSubtask(subtaskId,subtusk2);
-        System.out.println(manager.getEpic(epicId).toString());
-        manager.deleteSubtask(subtaskId);
-
-        System.out.println(manager.getAllSubtasks().size());
-        System.out.println(manager.getAllEpics().size());
-
-        manager.clearAllEpics();
-
-        System.out.println(manager.getAllSubtasks().size());
-        System.out.println(manager.getAllEpics().size());
+        ArrayList<Subtask> subtasks = manager.getEpicsSubtasks(epicId);
+        System.out.println("subtasks to GET");
+        System.out.println(subtasks.toString());
 
     }
 }
