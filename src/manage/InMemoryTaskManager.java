@@ -1,67 +1,93 @@
+package manage;
+
+import taskTypes.Epic;
+import taskTypes.Subtask;
+import taskTypes.Task;
+import taskTypes.TaskTypes;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TaskManager {
-    //Изменил название класса
+public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
     private HashMap<Integer, Epic> epics = new HashMap<>();
     private HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    //Общий Id для задач
     private int id = 1;
 
+    //Связанный список для истории использованных программ
+    private HistoryManager historyManager = Managers.getDefaultHistory();
+
     //Методы возвращающие все виды задач
-    //Исправил сигнатуру
+    @Override
     public ArrayList<Task> getAllTasks() {
         return new ArrayList<Task>(tasks.values());
     }
 
+    @Override
     public ArrayList<Epic> getAllEpics() {
         return new ArrayList<Epic>(epics.values());
     }
 
+    @Override
     public ArrayList<Subtask> getAllSubtasks() {
         return new ArrayList<Subtask>(subtasks.values());
     }
 
     //Методы очищающие все виды задач
+    @Override
     public void clearAllTasks() {
         tasks.clear();
     }
 
+    @Override
     public void clearAllEpics() {
         epics.clear();
         subtasks.clear();
-        //Добавил удаление всех сабтасков
     }
 
+    @Override
     public void clearAllSubtasks() {
         subtasks.clear();
-        for (Epic epic : epics.values())
-        {
+        for (Epic epic : epics.values()) {
             epic.clearAllSubtask();
+            checkEpicStatus(epic);
         }
     }
 
+    @Override
     //Методы для получения всех видов задач
     public Task getTask(int taskId) {
+        historyManager.add(tasks.get(taskId));
         return tasks.get(taskId);
     }
 
+    @Override
     public Epic getEpic(int epicId) {
+        historyManager.add(epics.get(epicId));
         return epics.get(epicId);
     }
 
+    @Override
     public Subtask getSubtask(int subtaskId) {
+        historyManager.add((epics.get(subtaskId)));
         return subtasks.get(subtaskId);
     }
 
+    //Метод получения истории использования
+    @Override
+    public ArrayList<Task> getHistory() {
+        return historyManager.getHistory();
+    }
+
     //Методы создающие все виды задач и записывающие в них Id
+    @Override
     public int addTask(Task newTask) {
         newTask.setTaskId(++id);
         tasks.put(id, newTask);
         return id;
     }
 
+    @Override
     public int addEpic(Epic newEpic) {
         newEpic.setTaskId(++id);
         epics.put(id, newEpic);
@@ -69,22 +95,22 @@ public class TaskManager {
     }
 
     //Метод при добавлении в мапу проверят и изменяет статус эпика
+    @Override
     public int addSubtask(Subtask newSubtask) {
-        //Добавил проверку на содержание эпика
         if (epics.containsKey(newSubtask.getEpicId())) {
             newSubtask.setTaskId(++id);
             subtasks.put(id, newSubtask);
             Epic epic = epics.get(newSubtask.getEpicId());
             epic.addSubtaskId(id);
-            //Исправил ошибку checkEpicStatus(epics.get(newSubtask.getEpicId()));
             checkEpicStatus(epic);
             return id;
-        }else {
+        } else {
             return 0;
         }
     }
 
     //Методы изменяющие все виды задач
+    @Override
     public void changeTask(int taskId, Task task) {
         if (tasks.containsKey(taskId)) {
             tasks.put(taskId, task);
@@ -92,6 +118,7 @@ public class TaskManager {
     }
 
     //При изменении сабтаска проверяется статус эпика
+    @Override
     public void changeSubtask(int subtaskId, Subtask subtask) {
         if (subtasks.containsKey(subtaskId)) {
             subtasks.put(subtaskId, subtask);
@@ -100,24 +127,21 @@ public class TaskManager {
         }
     }
 
-    public void changeEpic(int epicId, String name, String text) {
-        //Исправил получение целого эпика на получение его имени и текста
-        if (epics.containsKey(epicId)){
-            Epic epic = epics.get(epicId);
-            epic.setTaskName(name);
-            epic.setTaskText(text);
-            checkEpicStatus(epic);
-            //убрал epics.put(epicId, checkEpicStatus(epic));
+    @Override
+    public void changeEpic(int epicID, Epic epic) {
+        if(epics.containsKey(epicID)){
+            epics.put(epicID,epic);
         }
     }
 
     //Методы удаляющие все виды задач
-    //Добавил проверку на наличие элемента в мапе
+    @Override
     public void deleteTask(int taskId) {
         if (tasks.containsKey(taskId)) tasks.remove(taskId);
     }
 
     //При удалении эпика удаляются и его сабтаски
+    @Override
     public void deleteEpic(int epicId) {
         if (epics.containsKey(epicId)) {
             Epic epic = epics.get(epicId);
@@ -131,6 +155,7 @@ public class TaskManager {
 
     //Метод при удалении сабтаска, получает ID его эпика удаляет
     // из него сабтаску и проверят не изменился ли его статус
+    @Override
     public void deleteSubtask(int subtaskId) {
         if (subtasks.containsKey(subtaskId)) {
             Subtask subtask = subtasks.get(subtaskId);
@@ -138,18 +163,16 @@ public class TaskManager {
             epic.deleteSubtask(subtaskId);
             subtasks.remove(subtaskId);
             checkEpicStatus(epic);
-            // Исправил epics.put(subtask.getEpicId(), checkEpicStatus(epic));
         }
     }
 
     //Метод возвращающий все подзадачи эпика
 
+    @Override
     public ArrayList<Subtask> getEpicsSubtasks(int epicId) {
-        //Исправил ошибку return new ArrayList<Subtask>(subtasks.values());
-        //к сожалению на другую реализацию меня не хватило((((
         ArrayList<Integer> subtasksId = epics.get(epicId).getSubtasksID();
         ArrayList<Subtask> returnedSubtasks = new ArrayList<>();
-        for (int sId: subtasksId){
+        for (int sId : subtasksId) {
             returnedSubtasks.add(subtasks.get(sId));
         }
         return returnedSubtasks;
@@ -157,10 +180,12 @@ public class TaskManager {
 
     //Метод обновляющий статус Эпика
 
+    // Я так и не понял нужно ли его закидывать в ИНТЕРФЕЙС,
+    // потому что в тз написано что свои методы туда запихивать не нужно,
+    // и по этому оставил тут
     public Epic checkEpicStatus(Epic epic) {
-        //Добавил проверку на пустоту, а не на Null
         if (epic.getSubtasksID().isEmpty()) {
-            epic.setTaskStatus("NEW");
+            epic.setTaskStatus(TaskTypes.NEW);
             return epic;
         }
 
@@ -170,23 +195,20 @@ public class TaskManager {
         int newStatus = 0;
         for (int subtaskId : subtasksInEpicId) {
             subtusk = subtasks.get(subtaskId);
-            if (subtusk.getTaskStatus().equals("DONE")) {
+            if (subtusk.getTaskStatus().equals(TaskTypes.DONE)) {
                 doneStasus++;
             }
-            if (subtusk.getTaskStatus().equals("NEW")) {
+            if (subtusk.getTaskStatus().equals(TaskTypes.NEW)) {
                 newStatus++;
             }
         }
-        //Исправил, убрал лишние return
         if (doneStasus == subtasksInEpicId.size()) {
-            epic.setTaskStatus("DONE");
+            epic.setTaskStatus(TaskTypes.DONE);
         } else if (newStatus == subtasksInEpicId.size()) {
-            epic.setTaskStatus("NEW");
+            epic.setTaskStatus(TaskTypes.DONE);
         }
 
-        epic.setTaskStatus("IN_PROGRESS");
+        epic.setTaskStatus(TaskTypes.IN_PROGRESS);
         return epic;
     }
-
-
 }

@@ -1,19 +1,21 @@
+package taskTypes;
+
 import java.util.Objects;
 
 public class Task {
     protected int taskId;
-    protected String taskStatus;
+    protected TaskTypes taskStatus;
     protected String taskName;
     protected String taskText;
 
-    public Task(int taskId, String taskStatus, String taskName, String taskText) {
+    public Task(int taskId, TaskTypes taskStatus, String taskName, String taskText) {
         this.taskId = taskId;
         this.taskStatus = taskStatus;
         this.taskName = taskName;
         this.taskText = taskText;
     }
 
-    public Task(String taskStatus, String taskName, String taskText) {
+    public Task(TaskTypes taskStatus, String taskName, String taskText) {
         this.taskStatus = taskStatus;
         this.taskName = taskName;
         this.taskText = taskText;
@@ -27,11 +29,11 @@ public class Task {
         this.taskId = taskId;
     }
 
-    public String getTaskStatus() {
+    public TaskTypes getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(String taskStatus) {
+    public void setTaskStatus(TaskTypes taskStatus) {
         this.taskStatus = taskStatus;
     }
 
@@ -55,7 +57,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "taskTypes.Task{" +
                 "taskId=" + taskId +
                 ", taskStatus='" + taskStatus + '\'' +
                 ", taskName='" + taskName + '\'' +
