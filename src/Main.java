@@ -1,10 +1,9 @@
-import manage.InMemoryTaskManager;
-import manage.Managers;
-import manage.TaskManager;
-import taskTypes.Epic;
-import taskTypes.Subtask;
-import taskTypes.Task;
-import taskTypes.TaskTypes;
+import managers.Managers;
+import managers.TaskManager;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+import tasks.TaskTypes;
 
 import java.util.ArrayList;
 
@@ -72,7 +71,7 @@ public class  Main {
         for (int i = 0; i < 15; i++) {
            manager.getTask(taskId0);
         }
-        ArrayList<Task> tasksHistory = manager.getHistory();
+        ArrayList<Task> tasksHistory = (ArrayList<Task>) manager.getHistory();
         int iteration = 1;
         for (Task task : tasksHistory) {
             System.out.println(iteration++);
@@ -88,7 +87,7 @@ public class  Main {
         int lastTask = manager.addTask(new Task(TaskTypes.IN_PROGRESS,"Последний такск в истори просмотра","ТЕКСТ ПОСЛЕДНЕГО ТАКСА"));
 
         manager.getTask(lastTask);
-        tasksHistory = manager.getHistory();
+        tasksHistory = (ArrayList<Task>) manager.getHistory();
 
         iteration = 1;
         for (Task task : tasksHistory) {

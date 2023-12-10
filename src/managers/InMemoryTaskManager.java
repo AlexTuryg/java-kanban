@@ -1,21 +1,26 @@
-package manage;
+package managers;
 
-import taskTypes.Epic;
-import taskTypes.Subtask;
-import taskTypes.Task;
-import taskTypes.TaskTypes;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+import tasks.TaskTypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    /*Добавил final, я похоже не совсем правильно понял как они работают
+    И думал что они вообще не дают изменять поле, но теперь еще раз пройду
+    теорию, изучу.
+    */
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int id = 1;
 
     //Связанный список для истории использованных программ
-    private HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     //Методы возвращающие все виды задач
     @Override
@@ -56,26 +61,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     //Методы для получения всех видов задач
+
+    //Исправил повторный вызов HashMap
     public Task getTask(int taskId) {
-        historyManager.add(tasks.get(taskId));
-        return tasks.get(taskId);
+        Task task = tasks.get(taskId);
+        historyManager.add(task);
+        return task;
     }
 
     @Override
     public Epic getEpic(int epicId) {
-        historyManager.add(epics.get(epicId));
-        return epics.get(epicId);
+        Epic epic = epics.get(epicId);
+        historyManager.add(epic);
+        return epic;
     }
 
     @Override
     public Subtask getSubtask(int subtaskId) {
-        historyManager.add((epics.get(subtaskId)));
-        return subtasks.get(subtaskId);
+        Subtask subtask = subtasks.get(subtaskId);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     //Метод получения истории использования
     @Override
-    public ArrayList<Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 
@@ -180,10 +190,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Метод обновляющий статус Эпика
 
-    // Я так и не понял нужно ли его закидывать в ИНТЕРФЕЙС,
-    // потому что в тз написано что свои методы туда запихивать не нужно,
-    // и по этому оставил тут
-    public Epic checkEpicStatus(Epic epic) {
+    // Сделал приватным
+    private Epic checkEpicStatus(Epic epic) {
         if (epic.getSubtasksID().isEmpty()) {
             epic.setTaskStatus(TaskTypes.NEW);
             return epic;
