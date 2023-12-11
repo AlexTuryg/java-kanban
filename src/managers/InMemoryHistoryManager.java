@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * В этой реализации не учитываются повторяющиеся вызовы, и буфер всего на 10 элементов
  */
 public class InMemoryHistoryManager implements HistoryManager {
-    ArrayList<Task> tasksHistory = new ArrayList<>();
+    private final ArrayList<Task> tasksHistory = new ArrayList<>();
 
     @Override
     public void add(Task task) {
@@ -24,11 +24,13 @@ public class InMemoryHistoryManager implements HistoryManager {
                     break;
                 }
                 /*
-                "Можно было проще сделать удаление
-                    tasksHisory.remove(0); "
+                "В этом случае вы просто удаляет 0 элемента,
+                 не нужно пробегаться по всем списку"
 
-                Не понял как это использовать, в моей реализации нулевой
-                объект в листе просто перезаписывается первым, и так далее.
+                Все, благодаря объяснению понял, я просто решил что
+                элементы должны быть с 0 по 9 в ArrayList, и так будет
+                проще в следующий раз с ними работать,
+                в общем сам все усложнил
                  */
 
                 tasksHistory.set(i, tasksHistory.get(i + 1));

@@ -25,17 +25,17 @@ public class InMemoryTaskManager implements TaskManager {
     //Методы возвращающие все виды задач
     @Override
     public ArrayList<Task> getAllTasks() {
-        return new ArrayList<Task>(tasks.values());
+        return new ArrayList<>(tasks.values());
     }
 
     @Override
     public ArrayList<Epic> getAllEpics() {
-        return new ArrayList<Epic>(epics.values());
+        return new ArrayList<>(epics.values());
     }
 
     @Override
     public ArrayList<Subtask> getAllSubtasks() {
-        return new ArrayList<Subtask>(subtasks.values());
+        return new ArrayList<>(subtasks.values());
     }
 
     //Методы очищающие все виды задач
@@ -139,8 +139,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void changeEpic(int epicID, Epic epic) {
-        if(epics.containsKey(epicID)){
-            epics.put(epicID,epic);
+        //Исправил
+        if (epics.containsKey(epicID)) {
+            Epic epicToChange = epics.get(epicID);
+            epicToChange.setTaskName(epic.getTaskName());
+            epicToChange.setTaskText(epic.getTaskText());
         }
     }
 
@@ -191,10 +194,10 @@ public class InMemoryTaskManager implements TaskManager {
     //Метод обновляющий статус Эпика
 
     // Сделал приватным
-    private Epic checkEpicStatus(Epic epic) {
+    private void checkEpicStatus(Epic epic) {
         if (epic.getSubtasksID().isEmpty()) {
             epic.setTaskStatus(TaskTypes.NEW);
-            return epic;
+            return;
         }
 
         ArrayList<Integer> subtasksInEpicId = epic.getSubtasksID();
@@ -213,10 +216,15 @@ public class InMemoryTaskManager implements TaskManager {
         if (doneStasus == subtasksInEpicId.size()) {
             epic.setTaskStatus(TaskTypes.DONE);
         } else if (newStatus == subtasksInEpicId.size()) {
-            epic.setTaskStatus(TaskTypes.DONE);
+            epic.setTaskStatus(TaskTypes.NEW);
+        } else {
+            epic.setTaskStatus(TaskTypes.IN_PROGRESS);
         }
-
-        epic.setTaskStatus(TaskTypes.IN_PROGRESS);
-        return epic;
+        /*
+        Переделал как вы сказали, я просто еще в первой проверке TЗ 3
+        после вашего замечания забыл изменить структуру, и у меня во всех
+        версиях была ошибка
+        */
     }
+
 }
