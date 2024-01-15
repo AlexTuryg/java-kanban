@@ -3,6 +3,7 @@ package managers;
 import tasks.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Этот класс имплементирует класс HistoryManager, и является его реализацией.
@@ -10,37 +11,85 @@ import java.util.ArrayList;
  */
 public class InMemoryHistoryManager implements HistoryManager {
     private final ArrayList<Task> tasksHistory = new ArrayList<>();
+    private final HashMap<Integer, Node> customLinked = new HashMap<>();
+    int size = 0;
+    private Node<Integer> lastNode;
+    private Node<Integer> fitstNode;
 
     @Override
     public void add(Task task) {
-        //Добавил проверку на Null, и исправил опечатку
+
         if (task == null) return;
-        if (tasksHistory.size() < 10) {
-            tasksHistory.add(task);
+
+        tasksHistory.add(task);
+        linkLast(task.getTaskId());
+
+    }
+
+    private void linkLast(Integer taskId) {
+        Node<Integer> l = lastNode;
+        Node<Integer> newNode = new Node<>(taskId, null, l);
+
+        if (l == null) {
+            customLinked.put(taskId, newNode);
+            fitstNode = new Node<>(taskId, null, null);
         } else {
-            for (int i = 0; i < 10; i++) {
-                if (i==9) {
-                    tasksHistory.set(i, task);
-                    break;
-                }
-                /*
-                "В этом случае вы просто удаляет 0 элемента,
-                 не нужно пробегаться по всем списку"
+            lastNode.next = newNode;
 
-                Все, благодаря объяснению понял, я просто решил что
-                элементы должны быть с 0 по 9 в ArrayList, и так будет
-                проще в следующий раз с ними работать,
-                в общем сам все усложнил
-                 */
-
-                tasksHistory.set(i, tasksHistory.get(i + 1));
+            if (customLinked.containsKey(taskId)) {
+                remove(taskId);
             }
+            customLinked.put(taskId, newNode);
         }
+        lastNode = newNode;
+        size++;
+    }
+
+    private ArrayList<Task> getTasks() {
+
+        ArrayList<Task> tasks = new ArrayList<>();
+
+        if (size == 0) return tasks;
+
+        Node<Integer> curentNode = fitstNode;
+
+        for (int i = 0; i < size; i++) {
+            tasks.add(tasksHistory.get(curentNode.data));
+            curentNode = curentNode.next;
+        }
+
+        return tasks;
     }
 
     @Override
     public ArrayList<Task> getHistory() {
-        //Исправил возвращение и удалил забытый тут проверочный код
-        return new ArrayList<>(tasksHistory);
+        return getTasks();
+    }
+
+    @Override
+    public void remove(int taskId) {
+        Node.removeNode(customLinked.get(taskId));
+        customLinked.remove(taskId);
+    }
+
+}
+
+class Node<T> {
+    public T data;
+    public Node<T> next;
+    public Node<T> prev;
+
+    public Node(T data, Node<T> next, Node<T> prev) {
+        this.data = data;
+        this.next = null;
+        this.prev = null;
+    }
+
+    public static void removeNode(Node node) {
+        Node prev = node.prev;
+        prev.next = node.next;
+
+        Node next = node.next;
+        next.prev = node.prev;
     }
 }
