@@ -6,11 +6,44 @@ import tasks.Task;
 import tasks.TaskTypes;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class  Main {
 
     public static void main(String[] args) {
         System.out.println("Поехали!");
+
+        TaskManager manager = Managers.getDefault();
+
+        int firstEpicId = manager.addEpic(new Epic("First epic", "First epic text"));
+
+        int feFirstSubtask = manager.addSubtask(new Subtask(TaskTypes.NEW,"First epic, First subtask",
+                "First epic, first subtask text",firstEpicId));
+        int feSecondSubtask = manager.addSubtask(new Subtask(TaskTypes.NEW,"First epic, Second subtask",
+                "First epic, Second subtask text",firstEpicId));
+        int feThirdSubtask = manager.addSubtask(new Subtask(TaskTypes.NEW,"First epic, Third subtask",
+                "First epic, Third subtask text",firstEpicId));
+
+        int secondEpicId = manager.addEpic(new Epic("Secind epic","Second epic text"));
+
+        /*manager.getEpic(firstEpicId);
+        manager.getEpic(firstEpicId);*/
+        manager.getEpic(secondEpicId);
+        manager.getEpic(firstEpicId);
+        manager.getEpic(secondEpicId);
+        manager.getEpic(secondEpicId);
+        manager.getEpic(firstEpicId);
+
+
+
+        List<Task> historyList =  manager.getHistory();
+
+        for (Task task : historyList){
+            System.out.println(task.toString());
+        }
+
+    }
+    public void myTest(){
         TaskManager manager = Managers.getDefault();
 
 
@@ -69,7 +102,7 @@ public class  Main {
 
         System.out.println("Тут проверяется заполняемость getHistory");
         for (int i = 0; i < 15; i++) {
-           manager.getTask(taskId0);
+            manager.getTask(taskId0);
         }
         ArrayList<Task> tasksHistory = (ArrayList<Task>) manager.getHistory();
         int iteration = 1;
@@ -94,7 +127,6 @@ public class  Main {
             System.out.println(iteration++);
             System.out.println(task.toString());
         }
-
 
     }
 }

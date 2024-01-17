@@ -2,8 +2,7 @@ package managers;
 
 import tasks.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Этот класс имплементирует класс HistoryManager, и является его реализацией.
@@ -12,64 +11,84 @@ import java.util.HashMap;
 public class InMemoryHistoryManager implements HistoryManager {
     private final ArrayList<Task> tasksHistory = new ArrayList<>();
     private final HashMap<Integer, Node> customLinked = new HashMap<>();
-    int size = 0;
-    private Node<Integer> lastNode;
-    private Node<Integer> fitstNode;
+    private Node lastNode;
+    private Node firstNode;
 
-    @Override
     public void add(Task task) {
 
-        if (task == null) return;
-
-        tasksHistory.add(task);
-        linkLast(task.getTaskId());
-
-    }
-
-    private void linkLast(Integer taskId) {
-        Node<Integer> l = lastNode;
-        Node<Integer> newNode = new Node<>(taskId, null, l);
-
-        if (l == null) {
-            customLinked.put(taskId, newNode);
-            fitstNode = new Node<>(taskId, null, null);
-        } else {
-            lastNode.next = newNode;
-
-            if (customLinked.containsKey(taskId)) {
-                remove(taskId);
+        if (task != null) {
+            if(tasksHistory.contains(task)){
+                remove(task.getTaskId());
             }
-            customLinked.put(taskId, newNode);
+            tasksHistory.add(task);
+            linkLast(task);
         }
-        lastNode = newNode;
-        size++;
     }
 
-    private ArrayList<Task> getTasks() {
-
-        ArrayList<Task> tasks = new ArrayList<>();
-
-        if (size == 0) return tasks;
-
-        Node<Integer> curentNode = fitstNode;
-
-        for (int i = 0; i < size; i++) {
-            tasks.add(tasksHistory.get(curentNode.data));
-            curentNode = curentNode.next;
+    private void linkLast(Task task) {
+        int taskId = task.getTaskId();
+        Node node = new Node<>(taskId, null, null);
+        Node l = lastNode;
+        if (firstNode == null && customLinked.isEmpty()) firstNode = node;
+        if (l == null) lastNode = node;
+        else {
+            l.next = node;
         }
+        customLinked.put(taskId,node);
 
-        return tasks;
+    }
+
+    private ArrayList<Integer> getTasks() {
+        ArrayList<Integer> tasksInCorrect = new ArrayList<>();
+        Node node = firstNode;
+        for (Map.Entry<Integer, Node> entry : customLinked.entrySet()){
+            if (Objects.equals(node,entry))
+                tasksInCorrect.add(entry.getKey());
+            node = entry.getValue().next;
+        }
+        return tasksInCorrect;
     }
 
     @Override
     public ArrayList<Task> getHistory() {
-        return getTasks();
+        ArrayList<Integer> tasksInCorrect = getTasks();
+        ArrayList<Task> history = new ArrayList<>();
+        for (Integer i : tasksInCorrect)
+        {
+            for (Task task : tasksHistory){
+                if(task.getTaskId() == i) history.add(task);
+            }
+        }
+        return history;
     }
 
     @Override
     public void remove(int taskId) {
-        Node.removeNode(customLinked.get(taskId));
+        tasksHistory.removeIf(task -> task.getTaskId() == taskId);
+        removeNode(customLinked.get(taskId));
         customLinked.remove(taskId);
+    }
+
+    public void removeNode(Node node) {
+        if (node == null) return;
+        final Node next = node.next;
+        final Node prev = node.prev;
+
+        if (prev == null){
+            firstNode = next;
+        }else {
+            prev.next = next;
+            node.prev = null;
+        }
+
+        if(next == null){
+            lastNode = prev;
+        }else {
+            next.prev = prev;
+            node.next = null;
+        }
+
+        node.data = null;
     }
 
 }
@@ -83,13 +102,5 @@ class Node<T> {
         this.data = data;
         this.next = null;
         this.prev = null;
-    }
-
-    public static void removeNode(Node node) {
-        Node prev = node.prev;
-        prev.next = node.next;
-
-        Node next = node.next;
-        next.prev = node.prev;
     }
 }

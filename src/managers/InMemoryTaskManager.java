@@ -10,10 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    /*Добавил final, я похоже не совсем правильно понял как они работают
-    И думал что они вообще не дают изменять поле, но теперь еще раз пройду
-    теорию, изучу.
-    */
+
     private final HashMap<Integer, Task> tasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
@@ -150,7 +147,10 @@ public class InMemoryTaskManager implements TaskManager {
     //Методы удаляющие все виды задач
     @Override
     public void deleteTask(int taskId) {
-        if (tasks.containsKey(taskId)) tasks.remove(taskId);
+        if (tasks.containsKey(taskId)){
+            historyManager.remove(taskId);
+            tasks.remove(taskId);
+        }
     }
 
     //При удалении эпика удаляются и его сабтаски
@@ -162,6 +162,7 @@ public class InMemoryTaskManager implements TaskManager {
             for (int subId : subtasksId) {
                 subtasks.remove(subId);
             }
+            historyManager.remove(epicId);
             epics.remove(epicId);
         }
     }
@@ -174,6 +175,7 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask subtask = subtasks.get(subtaskId);
             Epic epic = epics.get(subtask.getEpicId());
             epic.deleteSubtask(subtaskId);
+            historyManager.remove(subtaskId);
             subtasks.remove(subtaskId);
             checkEpicStatus(epic);
         }
@@ -193,7 +195,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Метод обновляющий статус Эпика
 
-    // Сделал приватным
     private void checkEpicStatus(Epic epic) {
         if (epic.getSubtasksID().isEmpty()) {
             epic.setTaskStatus(TaskTypes.NEW);
@@ -220,11 +221,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setTaskStatus(TaskTypes.IN_PROGRESS);
         }
-        /*
-        Переделал как вы сказали, я просто еще в первой проверке TЗ 3
-        после вашего замечания забыл изменить структуру, и у меня во всех
-        версиях была ошибка
-        */
+
     }
 
 }
