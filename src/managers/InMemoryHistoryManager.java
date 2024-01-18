@@ -15,7 +15,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node firstNode;
 
     public void add(Task task) {
-
         if (task != null) {
             if(tasksHistory.contains(task)){
                 remove(task.getTaskId());
@@ -30,22 +29,35 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node node = new Node<>(taskId, null, null);
         Node l = lastNode;
         if (firstNode == null && customLinked.isEmpty()) firstNode = node;
-        if (l == null) lastNode = node;
+        if (l == null)
+        {
+            lastNode = node;
+        }
         else {
             l.next = node;
+            node.prev = l;
+            lastNode = node;
         }
         customLinked.put(taskId,node);
-
     }
 
     private ArrayList<Integer> getTasks() {
         ArrayList<Integer> tasksInCorrect = new ArrayList<>();
+        HashMap<Integer,Node> copyOfCustomLinked = new HashMap<>();
+        copyOfCustomLinked.putAll(customLinked);
         Node node = firstNode;
-        for (Map.Entry<Integer, Node> entry : customLinked.entrySet()){
-            if (Objects.equals(node,entry))
-                tasksInCorrect.add(entry.getKey());
-            node = entry.getValue().next;
+
+        while (!copyOfCustomLinked.isEmpty()){
+            for (Map.Entry<Integer,Node> entry : customLinked.entrySet()){
+                if (Objects.equals(node,entry.getValue())){
+                    tasksInCorrect.add(entry.getKey());
+                    copyOfCustomLinked.remove(entry.getKey());
+                    break;
+                }
+            }
+            node = node.next;
         }
+
         return tasksInCorrect;
     }
 
@@ -69,10 +81,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         customLinked.remove(taskId);
     }
 
-    public void removeNode(Node node) {
+    private void removeNode(Node node) {
         if (node == null) return;
-        final Node next = node.next;
-        final Node prev = node.prev;
+        Node next = node.next;
+        Node prev = node.prev;
 
         if (prev == null){
             firstNode = next;
@@ -87,20 +99,19 @@ public class InMemoryHistoryManager implements HistoryManager {
             next.prev = prev;
             node.next = null;
         }
-
         node.data = null;
     }
+    class Node<T> {
+        public T data;
+        public Node<T> next;
+        public Node<T> prev;
 
-}
-
-class Node<T> {
-    public T data;
-    public Node<T> next;
-    public Node<T> prev;
-
-    public Node(T data, Node<T> next, Node<T> prev) {
-        this.data = data;
-        this.next = null;
-        this.prev = null;
+        public Node(T data, Node<T> next, Node<T> prev) {
+            this.data = data;
+            this.next = null;
+            this.prev = null;
+        }
     }
 }
+
+

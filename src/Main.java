@@ -26,22 +26,39 @@ public class  Main {
 
         int secondEpicId = manager.addEpic(new Epic("Secind epic","Second epic text"));
 
-        /*manager.getEpic(firstEpicId);
-        manager.getEpic(firstEpicId);*/
-        manager.getEpic(secondEpicId);
-        manager.getEpic(firstEpicId);
-        manager.getEpic(secondEpicId);
-        manager.getEpic(secondEpicId);
-        manager.getEpic(firstEpicId);
 
-
+        manager.getEpic(firstEpicId);
+        manager.getSubtask(feFirstSubtask);
+        manager.getSubtask(feSecondSubtask);
+        manager.getSubtask(feThirdSubtask);
+        manager.getEpic(secondEpicId);
 
         List<Task> historyList =  manager.getHistory();
+
+        System.out.println("Тут задачи должны выйти в порядке создания\n");
 
         for (Task task : historyList){
             System.out.println(task.toString());
         }
 
+        System.out.println("Тут я удалил 2ую сабтаку, и вызвал 1й эпик из-за чего он должен стать последним в истории\n");
+        manager.deleteSubtask(feSecondSubtask);
+        manager.getEpic(firstEpicId);
+
+        historyList = manager.getHistory();
+
+        for (Task task : historyList){
+            System.out.println(task.toString());
+        }
+
+        System.out.println("А здесь я удалил 1й эпик с его сабтасками, и в истории остался только 2ой эпик\n");
+        manager.deleteEpic(firstEpicId);
+
+        historyList = manager.getHistory();
+
+        for (Task task : historyList){
+            System.out.println(task.toString());
+        }
     }
     public void myTest(){
         TaskManager manager = Managers.getDefault();
