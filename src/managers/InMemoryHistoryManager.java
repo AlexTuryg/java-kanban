@@ -6,7 +6,7 @@ import java.util.*;
 
 /**
  * Этот класс имплементирует класс HistoryManager, и является его реализацией.
- * В этой реализации не учитываются повторяющиеся вызовы, и буфер всего на 10 элементов
+ * В этой реализации учитываются повторяющиеся вызовы, и удаление TASKов.
  */
 public class InMemoryHistoryManager implements HistoryManager {
     private final ArrayList<Task> tasksHistory = new ArrayList<>();
@@ -14,18 +14,28 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node lastNode;
     private Node firstNode;
 
+    /**
+     * Метод принимает объект Task и добавляет его в историю просмотра.
+     * В случае если такой объект уже вызывался, он помещается на верх истории, а прошлый
+     * вызов удаляется.
+     * @param task
+     */
     public void add(Task task) {
         if (task != null) {
             if(tasksHistory.contains(task)){
                 remove(task.getTaskId());
             }
             tasksHistory.add(task);
-            linkLast(task);
+            linkLast(task.getTaskId());
         }
     }
 
-    private void linkLast(Task task) {
-        int taskId = task.getTaskId();
+    /**
+     * Метод принимает ID таски, и делает его ключем.
+     * А так же в методе записываются связи между тасками
+     * @param taskId
+     */
+    private void linkLast(Integer taskId) {
         Node node = new Node<>(taskId, null, null);
         Node l = lastNode;
         if (firstNode == null && customLinked.isEmpty()) firstNode = node;
@@ -41,6 +51,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         customLinked.put(taskId,node);
     }
 
+    /**
+     * В мтеоде создается два списка, первый является порядком вызовов Тасок, второй является копией истори.
+     * Во время выполения алгоритма из копии customLinked стираются отсортированные в taskInCorrect элементы,
+     * цикл выполняется пока copyOfCustomLinked не опустеет.
+     * @return
+     */
     private ArrayList<Integer> getTasks() {
         ArrayList<Integer> tasksInCorrect = new ArrayList<>();
         HashMap<Integer,Node> copyOfCustomLinked = new HashMap<>();
@@ -61,6 +77,11 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tasksInCorrect;
     }
 
+    /**
+     * Метод получает отсоритрованную историю из метода getTasks(), и сортирует уже лист тасок
+     * которые в последствии в осторированном виде передает вызывающему его объекту.
+     * @return
+     */
     @Override
     public ArrayList<Task> getHistory() {
         ArrayList<Integer> tasksInCorrect = getTasks();
@@ -74,6 +95,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
+    /**
+     * Метод принимает id таски которую нужно удалить из истории, и удалет ее из списка тасков и из связанного списка
+     * @param taskId
+     */
     @Override
     public void remove(int taskId) {
         tasksHistory.removeIf(task -> task.getTaskId() == taskId);
@@ -81,6 +106,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         customLinked.remove(taskId);
     }
 
+    /**
+     * Мето переопределяющий связи между нодами связанного списка
+     * @param node
+     */
     private void removeNode(Node node) {
         if (node == null) return;
         Node next = node.next;
