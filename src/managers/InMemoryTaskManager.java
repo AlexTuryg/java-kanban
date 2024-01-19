@@ -5,9 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 import tasks.TaskTypes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -38,17 +36,26 @@ public class InMemoryTaskManager implements TaskManager {
     //Методы очищающие все виды задач
     @Override
     public void clearAllTasks() {
+        for (Map.Entry<Integer,Task> entry : tasks.entrySet()){
+            historyManager.remove(entry.getValue().getTaskId());
+        }
         tasks.clear();
     }
 
     @Override
     public void clearAllEpics() {
+        for (Map.Entry<Integer,Epic> entry : epics.entrySet()){
+            historyManager.remove(entry.getValue().getTaskId());
+        }
         epics.clear();
         subtasks.clear();
     }
 
     @Override
     public void clearAllSubtasks() {
+        for (Map.Entry<Integer,Subtask> entry : subtasks.entrySet()){
+            historyManager.remove(entry.getValue().getTaskId());
+        }
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.clearAllSubtask();
@@ -160,8 +167,8 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(epicId);
             ArrayList<Integer> subtasksId = epic.getSubtasksID();
             for (int subId : subtasksId) {
-                subtasks.remove(subId);
                 historyManager.remove(subId);
+                subtasks.remove(subId);
             }
             historyManager.remove(epicId);
             epics.remove(epicId);
