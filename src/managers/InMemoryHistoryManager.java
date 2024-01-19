@@ -99,6 +99,22 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> next = node.next;
         Node<Task> prev = node.prev;
 
+        //Есть такой вариант, но он больше копия того что вы мне скинули
+        /*if(prev != null){
+            prev.next = next;
+            if (next == null)
+                lastNode = prev;
+            else
+                next.prev = prev;
+        } else {
+            firstNode = next;
+            if (firstNode == null)
+                lastNode = node;
+            else
+                firstNode.prev = null;
+        }*/
+
+
         if (prev != null && next != null) {
             prev.next = node.next;
             next.prev = node.prev;
@@ -111,7 +127,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             prev.next = null;
         }
-        
     }
 
     class Node<T> {
