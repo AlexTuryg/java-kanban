@@ -3,7 +3,6 @@ package tasks;
 import java.util.Objects;
 
 public class Subtask extends Task{
-    //Изменил опечатку в названии класса
     private int epicID;
 
     public Subtask(int taskId, TaskTypes taskStatus, String taskName, String taskText, int epicID) {

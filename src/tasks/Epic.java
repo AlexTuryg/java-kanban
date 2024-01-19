@@ -21,12 +21,10 @@ public class Epic extends Task {
     public ArrayList<Integer> getSubtasksID() {
         return subtasksId;
     }
-    //Добавил метод для очистки всех Id сабтасков
     public void clearAllSubtask(){
         subtasksId.clear();
     }
 
-    //Переписал метод
     public void deleteSubtask(int subtaskId){
        subtasksId.remove(Integer.valueOf(subtaskId)) ;
     }

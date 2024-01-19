@@ -64,7 +64,6 @@ public class Task {
                 ", taskText='" + taskText + '\'' +
                 '}'+ "\n";
     }
-    //Переопределил методы
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

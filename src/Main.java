@@ -62,6 +62,16 @@ public class  Main {
             System.out.println(task.toString());
         }
 
+        manager.deleteEpic(secondEpicId);
+
+        System.out.println("Проверка удаления последнего элемента, списко должен быть пуст");
+
+        historyList = manager.getHistory();
+
+        for (Task task : historyList){
+            System.out.println(task.toString());
+        }
+
 
     }
 }
