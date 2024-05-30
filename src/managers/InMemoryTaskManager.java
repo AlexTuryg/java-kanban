@@ -3,18 +3,18 @@ package managers;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-import tasks.TaskStatus;
+import tasks.TaskTypes;
 
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    protected static final HashMap<Integer, Task> tasks = new HashMap<>();
-    protected static final HashMap<Integer, Epic> epics = new HashMap<>();
-    protected static final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    protected static int id = 1;
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private int id = 1;
 
-    protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public ArrayList<Task> getAllTasks() {
@@ -188,7 +188,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private void checkEpicStatus(Epic epic) {
         if (epic.getSubtasksID().isEmpty()) {
-            epic.setTaskStatus(TaskStatus.NEW);
+            epic.setTaskStatus(TaskTypes.NEW);
             return;
         }
 
@@ -198,19 +198,19 @@ public class InMemoryTaskManager implements TaskManager {
         int newStatus = 0;
         for (int subtaskId : subtasksInEpicId) {
             subtusk = subtasks.get(subtaskId);
-            if (subtusk.getTaskStatus().equals(TaskStatus.DONE)) {
+            if (subtusk.getTaskStatus().equals(TaskTypes.DONE)) {
                 doneStasus++;
             }
-            if (subtusk.getTaskStatus().equals(TaskStatus.NEW)) {
+            if (subtusk.getTaskStatus().equals(TaskTypes.NEW)) {
                 newStatus++;
             }
         }
         if (doneStasus == subtasksInEpicId.size()) {
-            epic.setTaskStatus(TaskStatus.DONE);
+            epic.setTaskStatus(TaskTypes.DONE);
         } else if (newStatus == subtasksInEpicId.size()) {
-            epic.setTaskStatus(TaskStatus.NEW);
+            epic.setTaskStatus(TaskTypes.NEW);
         } else {
-            epic.setTaskStatus(TaskStatus.IN_PROGRESS);
+            epic.setTaskStatus(TaskTypes.IN_PROGRESS);
         }
 
     }

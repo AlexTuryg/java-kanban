@@ -1,5 +1,5 @@
 package tasks;
 
-public enum TaskStatus {
+public enum TaskTypes {
     NEW,IN_PROGRESS,DONE;
 }
