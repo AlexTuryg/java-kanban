@@ -27,6 +27,7 @@ public class Main {
         makeSomeTasks(manager);
         // Добавлет эпик и сабтаски
         makeSomeEpicsWithSubtasks(manager);
+        //
         // Удаляет все эпики и сабтаски
         deleteAllEpic(manager);
         // Удаляет все таски
