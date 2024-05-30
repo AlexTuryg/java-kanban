@@ -4,18 +4,18 @@ import java.util.Objects;
 
 public class Task {
     protected int taskId;
-    protected TaskStatus taskStatus;
+    protected TaskTypes taskStatus;
     protected String taskName;
     protected String taskText;
 
-    public Task(int taskId, TaskStatus taskStatus, String taskName, String taskText) {
+    public Task(int taskId, TaskTypes taskStatus, String taskName, String taskText) {
         this.taskId = taskId;
         this.taskStatus = taskStatus;
         this.taskName = taskName;
         this.taskText = taskText;
     }
 
-    public Task(TaskStatus taskStatus, String taskName, String taskText) {
+    public Task(TaskTypes taskStatus, String taskName, String taskText) {
         this.taskStatus = taskStatus;
         this.taskName = taskName;
         this.taskText = taskText;
@@ -29,11 +29,11 @@ public class Task {
         this.taskId = taskId;
     }
 
-    public TaskStatus getTaskStatus() {
+    public TaskTypes getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatus taskStatus) {
+    public void setTaskStatus(TaskTypes taskStatus) {
         this.taskStatus = taskStatus;
     }
 
